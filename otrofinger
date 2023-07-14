@@ -1,0 +1,60 @@
+#include <Adafruit_Fingerprint.h>
+
+
+
+#if (defined(__AVR__) || defined(ESP8266)) && !defined(__AVR_ATmega2560__)
+
+SoftwareSerial mySerial(2, 3);
+
+#else
+
+#define mySerial Serial1
+
+#endif
+
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+
+void setup()
+{
+  Serial.begin(9600);
+  while (!Serial); 
+  delay(100);
+  Serial.println("\n\nAdafruit finger detect test");
+
+ 
+  finger.begin(57600);
+  delay(5);
+  if (finger.verifyPassword()) {
+    Serial.println("encontrado sensor de huella!");
+  } else {
+    Serial.println("no se encontro sensor :(");
+    while (1) { delay(1); }
+  }
+
+  //Serial.println(F("leyendo parametros del sensor"));
+  finger.getParameters();
+ 
+
+}
+
+void loop()                    
+{
+  // LED completamente prendido
+  finger.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_RED);
+  delay(250);
+  finger.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_BLUE);
+  delay(250);
+  finger.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_PURPLE);
+  delay(250);
+
+  // flashea el led rojo
+  finger.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 10);
+  delay(2000);
+  
+  finger.LEDcontrol(FINGERPRINT_LED_BREATHING, 100, FINGERPRINT_LED_BLUE);
+  delay(3000);
+  finger.LEDcontrol(FINGERPRINT_LED_GRADUAL_ON, 200, FINGERPRINT_LED_PURPLE);
+  delay(2000);
+  finger.LEDcontrol(FINGERPRINT_LED_GRADUAL_OFF, 200, FINGERPRINT_LED_PURPLE);
+  delay(2000);
+}
